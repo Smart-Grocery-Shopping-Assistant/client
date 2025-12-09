@@ -75,20 +75,25 @@ function App() {
 
   // Handle Check Expiries button click
   const handleCheckExpiries = async () => {
-    handleUserMessage("Show me a list of all expiring items in the next 7 days.");
+    handleUserMessage(
+      "Show me a list of all expiring items in the next 7 days."
+    );
     try {
       const response = await axiosInstance.get("/expiry");
       const expiryData = response.data;
       let expiryMessage = "";
-      
+
       if (Array.isArray(expiryData) && expiryData.length > 0) {
-        expiryMessage = "Expiring items:\n\n" + expiryData.map(item => `• ${item}`).join("\n");
+        expiryMessage =
+          "Expiring items:\n\n" +
+          expiryData.map((item) => `• ${item}`).join("\n");
       } else if (typeof expiryData === "object" && expiryData !== null) {
-        expiryMessage = "Expiring items:\n\n" + JSON.stringify(expiryData, null, 2);
+        expiryMessage =
+          "Expiring items:\n\n" + JSON.stringify(expiryData, null, 2);
       } else {
         expiryMessage = "Great news! No items are expiring soon.";
       }
-      
+
       handleAiMessage(expiryMessage);
     } catch (error) {
       console.error("Failed to fetch expiry items", error);
@@ -107,6 +112,10 @@ function App() {
     };
     fetchGroceryList();
   }, [triggerFetch]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+  }, [isLoading]);
 
   return (
     <div className="flex w-full h-screen bg-gray-50 text-gray-800">
@@ -166,7 +175,7 @@ function App() {
         </div>
 
         {/* Chat Messages Display */}
-        <div className="flex flex-col w-full px-6 gap-4 max-w-7xl overflow-y-auto grow mb-4 custom-scrollbar">
+        <div className="flex flex-col w-full px-6 gap-4 max-w-7xl overflow-y-auto grow mb-4 overflow-auto">
           {conversation.map((msg, index) => (
             <div
               key={index}
@@ -196,8 +205,7 @@ function App() {
           {isLoading && (
             <div className="w-full flex justify-start">
               <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-3xl bg-white text-gray-500 border border-gray-100 rounded-tl-none shadow-sm">
-                <span className="animate-pulse">...</span>
-                <span className="text-sm">Grocy-AI is thinking</span>
+                <span className="text-sm">Thinking...</span>
               </div>
             </div>
           )}
@@ -207,7 +215,7 @@ function App() {
         </div>
 
         {/* Chat Input Area */}
-        <div className="shrink-0 p-4 border-t border-gray-100 w-full max-w-7xl bg-white shadow-2xl">
+        <div className="shrink-0 p-4 w-full max-w-7xl">
           <ChatBox
             onUserMessage={handleUserMessage}
             onAiMessage={handleAiMessage}
