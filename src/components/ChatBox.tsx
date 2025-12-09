@@ -6,7 +6,7 @@ import axiosInstance from '../utils/AxiosInstance';
 // 1. Type the Props Interface
 interface ChatInputProps {
     onUserMessage: (message: string) => void;
-    onAiMessage: (message: string) => void;
+    onAiMessage: (message: string, reminders?: any) => void;
     isLoading: boolean;
     onLoadingChange: (loading: boolean) => void;
     setTriggerFetch: (value: boolean) => void;
@@ -61,8 +61,10 @@ const ChatBox: FC<ChatInputProps> = ({
             // FIX 1: Extract the success message from the backend response
             let aiContent = response.data.message || 
                             `Successfully added ${response.data.count || 0} items.`;
+
+            const reminders = response.data.reminders;
             
-            onAiMessage(aiContent);
+            onAiMessage(aiContent, reminders);
         } catch (error: any) {
             
             // FIX 2: Handle specific error formats from the Flask server

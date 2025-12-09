@@ -6,6 +6,7 @@ import axiosInstance from "./utils/AxiosInstance";
 interface ChatMessage {
   role: "user" | "ai"; // Role can only be 'user' or 'ai'
   content: string;
+  reminders?: string[];
 }
 
 interface GroceryItemEntry {
@@ -69,8 +70,15 @@ function App() {
   };
 
   // Add an AI message to the conversation
-  const handleAiMessage = (message: string) => {
-    setConversation((prev) => [...prev, { role: "ai", content: message }]);
+  const handleAiMessage = (message: string, reminders?: string[]) => {
+    setConversation((prev) => [
+      ...prev,
+      {
+        role: "ai",
+        content: message,
+        reminders: reminders || [],
+      },
+    ]);
   };
 
   // Handle Check Expiries button click
@@ -119,7 +127,7 @@ function App() {
 
   return (
     <div className="flex w-full h-screen bg-gray-50 text-gray-800">
-      {/* 🍎 Left Sidebar: Grocery List & Quick Actions */}
+      {/* Left Sidebar: Grocery List & Quick Actions */}
       <div className="w-1/4 min-w-[300px] h-full shadow-xl bg-white flex flex-col z-10">
         {/* Sidebar Header */}
         <div className="flex w-full h-20 border-b border-gray-100 items-center justify-between shrink-0 px-6">
@@ -162,7 +170,7 @@ function App() {
         </div>
       </div>
 
-      {/* 💬 Right Main Chat Area */}
+      {/* Right Main Chat Area */}
       <div className="w-3/4 flex flex-col items-center bg-gray-50">
         {/* Header */}
         <div className="flex flex-col w-full h-20 border-b border-gray-100 mb-4 justify-center shrink-0 bg-white shadow-sm">
@@ -197,6 +205,20 @@ function App() {
                   </span>
                 )}
                 {msg.content}
+                {msg.role === "ai" &&
+                  msg.reminders &&
+                  msg.reminders.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-gray-200">
+                      <span className="text-xs font-semibold text-gray-400">
+                        Reminders:
+                      </span>
+                      <ul className="list-disc list-inside text-xs text-gray-500 mt-1">
+                        {msg.reminders.map((reminder, rIndex) => (
+                          <li key={rIndex}>{reminder}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
               </div>
             </div>
           ))}
